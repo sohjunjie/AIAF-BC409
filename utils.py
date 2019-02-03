@@ -3,6 +3,13 @@ from gensim.models.word2vec import Text8Corpus
 import numpy as np
 
 
+def standardize_features(dataset, features):
+    """ standardize feature of pandas dataframe to zero mean, unit standard deviation """
+    for f in features:
+        dataset[f] = (dataset[f] - dataset[f].mean()) / dataset[f].std()
+    return dataset
+
+
 def load_word2vec():
     model_gs = Word2Vec.load('model/text8_gs.bin')
     return model_gs
@@ -22,8 +29,9 @@ def process_word(word, word2vec):
     return word2vec.wv.get_vector(word)
 
 
-def standardize_features(dataset, features):
-    """ standardize feature of pandas dataframe to zero mean, unit standard deviation """
-    for f in features:
-        dataset[f] = (dataset[f] - dataset[f].mean()) / dataset[f].std()
-    return dataset
+def process_sentence(sentence, word2vec):
+    sent = sentence.lower().split(' ')
+    sent = [w for w in sent if len(w) > 0]
+    sent_vector = [process_word(word=w,
+                                word2vec=word2vec) for w in sent]
+    return sent_vector
