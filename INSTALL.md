@@ -3,6 +3,10 @@
 ## Contents
 - [Software installation and setup](#1-software-installation-and-setup)
 - [Install python dependencies](#2-install-python-dependencies)
+- [Code execution](#3-code-execution)
+        - [Word2Vec model](#31-word2vec-model)
+        - [Merge DJIA price dataset with news dataset](#32-merge-djia-price-dataset-with-news-dataset)
+        - [Generate neural-network friendly dataset](#33-generate-neural-network-friendly-dataset)
 
 
 ### 1. Software installation and setup
@@ -16,6 +20,7 @@ Change directory to the `AIAF-BC3409` project folder and install the required pa
         $ pip install -r requirements.txt
 ```
 
+
 ### 3. Code execution
 We will need to execute some python codes and commands to complete the project setup. The code excution are related to pre-processing of the raw dataset into one that meet our requirements.
 
@@ -27,7 +32,6 @@ We are using `Gensim`, a python library for topic modelling, document indexing a
 ```
         $ python create_word2vec.py
 ```
-
 
 #### 3.2 Merge DJIA price dataset with news dataset
 Our dataset source originates from [here](https://www.kaggle.com/aaron7sun/stocknews#Combined_News_DJIA.csv). There 3 given `csv` and their description are as follows.
