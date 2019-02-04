@@ -1,6 +1,6 @@
 # Project Installation
 
-## Contents
+### Contents
 - [Software installation and setup](#1-software-installation-and-setup)
 - [Install python dependencies](#2-install-python-dependencies)
 - [Code execution](#3-code-execution)
