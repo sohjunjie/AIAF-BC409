@@ -26,7 +26,7 @@ def process_word(word, word2vec):
     """ return word embedding from word2vec model given a word token """
     if not word in word2vec.wv.vocab:
         create_vector(word, word2vec)
-    return word2vec.wv.get_vector(word)
+    return (word2vec.wv.get_vector(word)).tolist()
 
 
 def process_sentence(sentence, word2vec):
