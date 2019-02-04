@@ -30,6 +30,10 @@ def process_word(word, word2vec):
 
 
 def process_sentence(sentence, word2vec):
+
+    if not type(sentence) is str:
+        return []
+
     sent = sentence.lower().split(' ')
     sent = [w for w in sent if len(w) > 0]
     sent_vector = [process_word(word=w,

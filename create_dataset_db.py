@@ -16,39 +16,33 @@ word2vec = utils.load_word2vec()
 dataset_topnews_colname = ['Top'+str(i) for i in range(1, 26)]
 dataset_list = []
 
-k = 0
+k = 1
 for idx, item in DJIA_PRICE_NEWS.iterrows():
 
     df_item = {}
+    df_item['_id'] = idx
     df_item['Date'] = idx
     df_item['Adj Close'] = item['Adj Close']
     df_item['Volume'] = item['Volume']
     for topnews_colname in dataset_topnews_colname:
         df_item[topnews_colname] = utils.process_sentence(item[topnews_colname], word2vec)
 
+        tmp = len(df_item[topnews_colname])
+
     dataset_list.append(df_item)
 
-    if k % 100 == 0 or k == len(DJIA_PRICE_NEWS)-1:
+    if k % 50 == 0 or k == len(DJIA_PRICE_NEWS):
         result = db_tbl_price_news.insert_many(dataset_list)
-        print('Multiple insert: {0}'.format(result.inserted_ids))
+        print('{0} of {1}'.format(k, len(DJIA_PRICE_NEWS)))
         dataset_list.clear()
     k += 1
 
+word2vec.save('model/text8_gs.bin')
 
 # dataset = pd.DataFrame(data=dataset_list, columns=['Date', 'Adj Close','Volume'] + dataset_topnews_colname)
 # dataset.set_index('Date', inplace=True)
 
-# print(dataset_list)
-
-
 # time_step = 10
-# for x in range(len(dataset) - time_step):
-
-#     train_seq = dataset[x:x+time_step]
-#     train_y = dataset.iloc[x+time_step, 5]
-#     train_x1 = train_seq.iloc[:, 4:6]               # volume, adj close
-#     train_x2 = train_seq.iloc[:, 7:32]              # top 1 - top 25 news
-
-#     print(train_x2)
-
-#     break
+# for x in range(len(1989) - time_step):
+#     train_y = db_tbl_price_news.find()[x+10]['Adj Close']
+#     train_seq = [x for x in db_tbl_price_news.find()[x:x+10]]
