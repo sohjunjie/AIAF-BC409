@@ -4,9 +4,9 @@
 - [Software installation and setup](#1-software-installation-and-setup)
 - [Install python dependencies](#2-install-python-dependencies)
 - [Code execution](#3-code-execution)
-        - [Word2Vec model](#31-word2vec-model)
-        - [Merge DJIA price dataset with news dataset](#32-merge-djia-price-dataset-with-news-dataset)
-        - [Generate neural-network friendly dataset](#33-generate-neural-network-friendly-dataset)
+  - [Word2Vec model](#31-word2vec-model)
+  - [Merge DJIA price dataset with news dataset](#32-merge-djia-price-dataset-with-news-dataset)
+  - [Generate neural-network friendly dataset](#33-generate-neural-network-friendly-dataset)
 
 
 ### 1. Software installation and setup
