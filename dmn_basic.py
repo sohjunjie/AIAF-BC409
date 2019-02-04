@@ -8,4 +8,5 @@ class DMNBasic:
         self.data_x = data_x
         self.data_y = data_y
 
-    def _process_input()
+    def _process_input():
+        pass

@@ -12,7 +12,7 @@ DJIA_PRICE_NEWS = pd.read_csv('data/DJIA_PRICE_NEWS.csv', index_col='Date')
 DJIA_PRICE_NEWS = utils.standardize_features(DJIA_PRICE_NEWS, ['Adj Close', 'Volume'])
 word2vec = utils.load_word2vec()
 
-# Generate the new dataset with word vector representation of news headline 
+# Generate the new dataset with word vector representation of news headline
 dataset_topnews_colname = ['Top'+str(i) for i in range(1, 26)]
 dataset_list = []
 

@@ -1,4 +1,4 @@
-# Accounting in AI and Finance
+# AI in Accounting and Finance
 
 ## Project Title
 Title
