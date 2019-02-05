@@ -1,7 +1,9 @@
+from config import WORD2VEC_DIM, NEWS_MAXSEQ_LEN
 from gensim.models import Word2Vec
 from gensim.models.word2vec import Text8Corpus
-import numpy as np
 from pymongo import MongoClient
+
+import numpy as np
 
 
 def _get_news_maxseq_len():
@@ -39,19 +41,19 @@ def create_vector(word, word2vec, word_vector_size):
     return vector
 
 
-def process_word(word, word2vec, word_vector_size=100):
+def process_word(word, word2vec, word_vector_size):
     """ return word embedding from word2vec model given a word token """
     if not word in word2vec.wv.vocab:
         create_vector(word, word2vec, word_vector_size)
     return word2vec.wv.get_vector(word)
 
 
-def process_sentence(sentence, word2vec, truncate=True, pad_length=64, word_vector_size=100):
+def process_sentence(sentence, word2vec, truncate=True, pad_length=NEWS_MAXSEQ_LEN, word_vector_size=WORD2VEC_DIM):
     """
     64 is the precomputed maxseq length for a given news
     """
     if not type(sentence) is str:
-        sent_vector = np.zeros(shape=(64, 100), dtype='float')
+        sent_vector = np.zeros(shape=(NEWS_MAXSEQ_LEN, word_vector_size), dtype='float')
         return sent_vector.tolist()
 
     sent = sentence.lower().split(' ')
@@ -59,7 +61,7 @@ def process_sentence(sentence, word2vec, truncate=True, pad_length=64, word_vect
 
     sent_vector = np.array([process_word(word=w,
                                         word2vec=word2vec,
-                                        word_vector_size=100) for w in sent])
+                                        word_vector_size=word_vector_size) for w in sent])
     if truncate:
         sent_vector = sent_vector[:pad_length]
 

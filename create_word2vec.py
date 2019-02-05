@@ -1,3 +1,4 @@
+from config import WORD2VEC_DIM
 from gensim.models import Word2Vec
 from gensim.models.word2vec import Text8Corpus
 
@@ -7,7 +8,7 @@ import os
 MODELS_DIR = 'model/'
 
 lr = 0.05
-dim = 100
+dim = WORD2VEC_DIM
 ws = 5
 epoch = 5
 minCount = 5
