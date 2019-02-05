@@ -42,11 +42,3 @@ for idx, item in DJIA_PRICE_NEWS.iterrows():
     k += 1
 
 word2vec.save('model/text8_gs.bin')
-
-# dataset = pd.DataFrame(data=dataset_list, columns=['Date', 'Adj Close','Volume'] + dataset_topnews_colname)
-# dataset.set_index('Date', inplace=True)
-
-# time_step = 10
-# for x in range(len(1989) - time_step):
-#     train_y = db_tbl_price_news.find()[x+10]['Adj Close']
-#     train_seq = [x for x in db_tbl_price_news.find()[x:x+10]]
