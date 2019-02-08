@@ -62,18 +62,18 @@ class LSTMBasic2:
         return news_dataseq_x, ohl_dataseq_x, dataseq_y
 
 
-    def _get_dataseq(self, type='validation'):
+    def _get_dataseq(self, idx_list):
         """ retrieve dataset for validation or evaluation """
         timestep = self.timestep
         news_seq_colname = ['Top' + str(x) for x in range(1, 26)]
         ohlcv_ac_colname = ['Open', 'High', 'Low', 'Close', 'Volume', 'Adj Close']
         news_dataseq_x, ohl_dataseq_x, dataseq_y = [], [], []
-        if type == 'validation':
-            idx_list = self.valid_start_idx_list
-        elif type == 'evaluation':
-            idx_list = self.evalu_start_idx_list
-        else:
-            raise Exception('unsupported dataseq type')
+        # if type == 'validation':
+        #     idx_list = self.valid_start_idx_list
+        # elif type == 'evaluation':
+        #     idx_list = self.evalu_start_idx_list
+        # else:
+        #     raise Exception('unsupported dataseq type')
         for idx in idx_list:
             res_x = self.db_tbl_price_news.find()[idx:idx+timestep]
             res_x_full = [x for x in res_x]
