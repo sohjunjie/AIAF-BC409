@@ -5,6 +5,7 @@ Join DJIA price dataset with reddit news by common date
 """
 
 import pandas as pd
+import re
 
 DJIA_NEWS = pd.read_csv('data/Combined_News_DJIA.csv', index_col='Date')
 DJIA_PRICE = pd.read_csv('data/DJIA_table.csv', index_col='Date')
