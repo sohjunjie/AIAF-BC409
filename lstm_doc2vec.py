@@ -10,9 +10,9 @@ from keras.layers import LSTM
 
 """
 : sample execution :
-from lstm_basic_v2 import LSTMBasic2
+from lstm_doc2vec import LSTMdoc2vec
 
-d = LSTMBasic2()
+d = LSTMdoc2vec()
 m = d.create_model()
 x1, x2, y = d._get_train_dataseq()
 tx1, tx2, ty = d._get_dataseq()
@@ -20,7 +20,7 @@ tx1, tx2, ty = d._get_dataseq()
 d.train_model(m, x1, x2, y, tx1, tx2, ty)
 """
 
-class LSTMBasic2:
+class LSTMdoc2vec:
     def __init__(self, timestep=5, batch_size=12, iteration=30):
         client = MongoClient('localhost', 27017)
         db = client.djia_news_dataset
