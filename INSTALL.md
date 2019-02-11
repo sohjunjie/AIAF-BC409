@@ -11,6 +11,7 @@
 
 ### 1. Software installation and setup
 - Get Mongodb [install](https://docs.mongodb.com/manual/installation/)
+- Get Graphviz [install](https://graphviz.gitlab.io/_pages/Download/Download_windows.html)
 - Get Python v3.6.x
 
 

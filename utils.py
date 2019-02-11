@@ -2,6 +2,7 @@ from config import WORD2VEC_DIM, DOC2VEC_DIM, NEWS_MAXSEQ_LEN
 from gensim.models import Word2Vec,  Doc2Vec
 from gensim.models.word2vec import Text8Corpus
 from pymongo import MongoClient
+from sklearn.preprocessing import MinMaxScaler
 
 import numpy as np
 
@@ -48,10 +49,10 @@ def _get_allnews_len():
     return ls
 
 
-def standardize_features(dataset, features):
+def scale_features(dataset, features, scaler):
     """ standardize feature of pandas dataframe to zero mean, unit standard deviation """
     for f in features:
-        dataset[f] = (dataset[f] - dataset[f].mean()) / dataset[f].std()
+        dataset[f] = scaler.transform(dataset[f].values.reshape(-1,1))
     return dataset
 
 
