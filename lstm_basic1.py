@@ -13,15 +13,15 @@ from sklearn.externals import joblib
 
 """
 : sample execution :
-from lstm_basic import LSTMbasic
+from lstm_basic1 import LSTMbasic
 
 d = LSTMbasic()
 m = d.create_model()
-x, y = d._get_train_dataseq()
-vx, vy = d._get_dataseq(d.valid_start_idx_list)
-ex, ey = d._get_dataseq(d.evalu_start_idx_list)
+x, y1, y2 = d._get_train_dataseq()
+vx, vy1, vy2 = d._get_dataseq(d.valid_start_idx_list)
+ex, ey1, ey2 = d._get_dataseq(d.evalu_start_idx_list)
 
-d.train_model(m, x, y, vx, vy, ex, ey)
+d.train_model(m, x, y1, y2, vx, vy1, vy2, ex, ey1, ey2)
 """
 
 class LSTMbasic:
@@ -48,7 +48,7 @@ class LSTMbasic:
         """ retrieve a sequential dataset starting at a random index """
         timestep = self.timestep
         ohlcv_ac_colname = ['Open', 'High', 'Low', 'Close', 'Volume', 'Adj Close']
-        ohl_dataseq_x, dataseq_y = [], []
+        ohl_dataseq_x, dataseq_y1, dataseq_y2 = [], [], []
         if len(self.train_start_idx_list) == 0:
             self.train_start_idx_list = self.train_start_idx.copy()
         # random.shuffle(self.train_start_idx_list)
@@ -58,27 +58,28 @@ class LSTMbasic:
             ohlcv_ac = [[r[colname]
                             for colname in ohlcv_ac_colname]
                             for r in res_x]
-            targetpr = [res_y['Adj Close']]
+            target1, target2 = res_y['Adj Close'], res_y['Label']
             ohl_dataseq_x.append(ohlcv_ac)
-            dataseq_y.append(targetpr)
-        return ohl_dataseq_x, dataseq_y
-
+            dataseq_y1.append(target1)
+            dataseq_y2.append(target2)
+        return ohl_dataseq_x, dataseq_y1, dataseq_y2
 
     def _get_dataseq(self, idx_list):
         """ retrieve dataset for validation or evaluation """
         timestep = self.timestep
         ohlcv_ac_colname = ['Open', 'High', 'Low', 'Close', 'Volume', 'Adj Close']
-        ohl_dataseq_x, dataseq_y = [], []
+        ohl_dataseq_x, dataseq_y1, dataseq_y2 = [], [], []
         for idx in idx_list:
             res_x = self.db_tbl_price_news.find()[idx:idx+timestep]
             res_y = self.db_tbl_price_news.find()[idx+timestep]
             ohlcv_ac = [[r[colname]
                             for colname in ohlcv_ac_colname]
                             for r in res_x]
-            targetpr = [res_y['Adj Close']]
+            target1, target2 = res_y['Adj Close'], res_y['Label']
             ohl_dataseq_x.append(ohlcv_ac)
-            dataseq_y.append(targetpr)
-        return ohl_dataseq_x, dataseq_y
+            dataseq_y1.append(target1)
+            dataseq_y2.append(target2)
+        return ohl_dataseq_x, dataseq_y1, dataseq_y2
 
     def create_model(self):
 
@@ -89,37 +90,48 @@ class LSTMbasic:
         djia_seq.add(LSTM(8))
 
         encoded_djia = djia_seq(input_djia_seq)
-        target = Dense(1)(encoded_djia)
+        target1 = Dense(1, name='target_price')(encoded_djia)
 
-        model = Model([input_djia_seq], target)
-        model.compile(optimizer='adam', loss='mean_squared_error',
-                    metrics=['mse'])
+        target2 = Dense(1)(encoded_djia)
+        target2 = Activation('sigmoid', name='target_label')(target2)
+
+        model = Model([input_djia_seq], [target1, target2])
+        model.compile(optimizer='adam',
+                      loss={'target_price': 'mean_squared_error', 'target_label': 'binary_crossentropy'},
+                      loss_weights={'target_price': 0.5, 'target_label': 0.5},
+                      metrics={'target_price': 'mse', 'target_label': 'accuracy'}
+                    )
 
         return model
 
 
-    def train_model(self, model, priceseq_train, target_train, priceseq_valid,
-        target_valid, priceseq_eval, target_eval):
+    def train_model(self, model,
+        priceseq_train, target_train1, target_train2,
+        priceseq_valid, target_valid1, target_valid2,
+        priceseq_eval, target_eval1, target_eval2):
 
         x = np.array(priceseq_train)
-        y = np.array(target_train)
+        y1 = np.array(target_train1)
+        y2 = np.array(target_train2)
 
         vx = np.array(priceseq_valid)
-        vy = np.array(target_valid)
+        vy1 = np.array(target_valid1)
+        vy2 = np.array(target_valid2)
 
         ex = np.array(priceseq_eval)
-        ey = np.array(target_eval)
+        ey1 = np.array(target_eval1)
+        ey2 = np.array(target_eval2)
 
-        history = model.fit([x], y,
-                    batch_size=self.batch_size,
+        history = model.fit([x], [y1, y2],
+                    batch_size=12,
                     epochs=20,
-                    validation_data=([vx], vy))
+                    validation_data=([vx], [vy1, vy2]))
 
-        results = model.predict([ex])
-        results = self.price_scaler.inverse_transform(results)
-        ey = self.price_scaler.inverse_transform(ey)
+        r1, r2 = model.predict([ex])
+        results = self.price_scaler.inverse_transform(r1)
+        ey1 = self.price_scaler.inverse_transform(ey1)
 
         plot_model(model, to_file='model_seq.png', show_shapes=True)
         plt.scatter(range(len(results)), results, c='r')
-        plt.scatter(range(len(results)), ey, c='b')
+        plt.scatter(range(len(results)), ey1, c='b')
         plt.show()
