@@ -3,3 +3,5 @@
 /.vscode
 */model
 */__pycache__
+*/data/*.zip
+*/data/*.csv
