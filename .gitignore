@@ -1,6 +1,5 @@
 /venv
 /.idea
 /.vscode
-/.ipynb_checkpoints
-/model
-/__pycache__
+*/model
+*/__pycache__

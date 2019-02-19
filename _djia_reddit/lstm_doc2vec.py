@@ -1,5 +1,5 @@
-from numpy.random import seed
-seed(1)
+# from numpy.random import seed
+# seed(1)
 # from tensorflow import set_random_seed
 # set_random_seed(1)
 
@@ -107,29 +107,25 @@ class LSTMdoc2vec:
         # require Dense layer to flatten 5 dimension to 3 dimension
         news_seq.add(Dense(50, batch_input_shape=(None, 5, 25, DOC2VEC_DIM)))
         news_seq.add(TimeDistributed(Flatten()))
-        news_seq.add(LSTM(64, batch_input_shape=(None, 5, 1250), return_sequences=False))
+        news_seq.add(LSTM(64, return_sequences=False))
         # news_seq.add(Dropout(0.2))
         encoded_news = news_seq(input_news_seq)
 
-        plot_model(news_seq, to_file='model_seq_1.png', show_shapes=True)
-
         djia_seq = Sequential(name='ohlc_lstm_ts5')
-        djia_seq.add(LSTM(64, batch_input_shape=(None, 5, 6,), return_sequences=False))
+        djia_seq.add(LSTM(64, return_sequences=False))
         # djia_seq.add(Dropout(0.2))
         encoded_djia = djia_seq(input_djia_seq)
 
-        encoded_news = Dense(64)(encoded_news)
-        encoded_djia = Dense(64)(encoded_djia)
+        encoded_news = Dense(32)(encoded_news)
+        encoded_djia = Dense(16)(encoded_djia)
 
-        merge = add([encoded_news, encoded_djia], name='news_price_add')
+        merge = concatenate([encoded_news, encoded_djia], name='news_price_concat')
 
         label = Dense(1)(merge)
         label = Dropout(0.2)(label)
         target_label = Activation('sigmoid', name='label_output')(label)
 
         target_price = Dense(32)(merge)
-        target_price = Dense(8)(target_price)
-        target_price = Dense(2)(target_price)
         target_price = Dense(1, name='price_output')(target_price)
 
         model = Model(inputs=[input_news_seq, input_djia_seq], outputs=[target_price, target_label])
