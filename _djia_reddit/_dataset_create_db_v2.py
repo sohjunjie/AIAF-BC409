@@ -6,6 +6,10 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.externals import joblib
 from pymongo import MongoClient
 
+"""
+https://github.com/mrjbq7/ta-lib
+"""
+
 
 client = MongoClient('localhost', 27017)
 db = client.djia_news_dataset
