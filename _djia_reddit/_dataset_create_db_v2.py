@@ -7,7 +7,13 @@ from sklearn.externals import joblib
 from pymongo import MongoClient
 
 """
+import pandas as pd
+import numpy as np
 https://github.com/mrjbq7/ta-lib
+
+D = pd.DataFrame()
+D['date'] = DJIA_PRICE_NEWS.index
+D['open'] = np.array(DJIA_PRICE_NEWS['Open'])
 """
 
 

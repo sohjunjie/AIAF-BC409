@@ -133,7 +133,7 @@ class LSTMdoc2vec:
         model.compile(optimizer='adam',
                       loss={'price_output': 'mean_squared_error', 'label_output': 'binary_crossentropy'},
                       metrics={'price_output': 'mse', 'label_output': 'accuracy'},
-                      loss_weights={'price_output': 0.5, 'label_output': 0.5}
+                      loss_weights={'price_output': 0, 'label_output': 1}
                     )
         return model
 
