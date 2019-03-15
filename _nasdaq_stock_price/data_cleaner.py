@@ -27,6 +27,7 @@ def generate_change_momentum(symbol, foldername):
 
 
     dataframe = pd.DataFrame({
+        'Date': target_file['Date'],
         'High': target_file['High'],
         'Low': target_file['Low'],
         'Open': target_file['Open'],
@@ -48,7 +49,7 @@ def combine_cleaned_files_nasdaq(companies, foldername):
         target_file = pd.read_csv(foldername + companies[i] + cleanedfile_postfix)
         headers = list(target_file)
 
-        j = 0
+        j = 1
         # -1 to remove the momentum from those classes
         while j < len(headers) - 1:
             dataframe[companies[i]+"_" + headers[j]] = target_file[headers[j]]

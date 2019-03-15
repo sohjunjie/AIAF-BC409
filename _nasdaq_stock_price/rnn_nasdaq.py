@@ -13,8 +13,8 @@ num_class = 1
 epochs = 20
 batch_size = 1
 
-time_steps = 1
-layer_type = "LSTM" # RNN, GRU or LSTM
+time_steps = 7
+layer_type = "LSTM" #RNN, GRU or LSTM
 rnn_units = 32
 rnn_layers = 9
 loss = "binary_crossentropy"
@@ -26,7 +26,11 @@ dropout = 0
 # process dataframe in to testing and training data
 def process_dataframe(dataframe):
     dataY = dataframe[["Momentum"]].values
-    dataX = dataframe.drop(columns=["Momentum"]).values
+    temp = dataframe.drop(columns=["Momentum"]).values
+
+    dataX = []
+    for index in range(len(temp) - time_steps):
+        dataX.append(temp[index: index + time_steps])
 
     # normalize the data here in the future if need be
 
@@ -47,7 +51,7 @@ def build_model(layer_type="LSTM", layer_num=2, activation_type="sigmoid", loss_
     else:
         rnn_layer = RNN
 
-    model.add(rnn_layer(rnn_units, return_sequences=True, input_shape=(batch_size, features)))
+    model.add(rnn_layer(rnn_units, return_sequences=True, input_shape=(batch_size, time_steps, features)))
     if layer_num < 2:
         layer_num = 2
     for i in range(layer_num - 2):
