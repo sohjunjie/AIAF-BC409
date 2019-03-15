@@ -87,10 +87,16 @@ def combine_cleaned_files_top9(companies, foldername):
     dataframe.to_csv(foldername + "combined_top9.csv", index=False, header=True)
 
 
+def combine_cleaned_files_with_news(foldername):
+    NASDAQ_PRICE = pd.read_csv(foldername + "combined_nasdaq.csv", index_col="Date")
+    NASDAQ_NEWS = pd.read_csv(foldername + 'RedditNews.csv', index_col='Date')
+    NASDAQ_PRICE_NEWS = pd.merge(NASDAQ_NEWS, NASDAQ_PRICE, left_index=True, right_index=True)
+    NASDAQ_PRICE_NEWS.to_csv(foldername + 'combined_nasdaq_news.csv')
+
+
 for company in symbols:
     generate_change_momentum(company, data_foldername)
 
 combine_cleaned_files_nasdaq(symbols, data_foldername)
 combine_cleaned_files_top9(symbols, data_foldername)
-
-
+# combine_cleaned_files_with_news(data_foldername)
