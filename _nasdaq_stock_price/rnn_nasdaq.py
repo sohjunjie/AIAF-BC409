@@ -26,11 +26,14 @@ dropout = 0
 # process dataframe in to testing and training data
 def process_dataframe(dataframe):
     dataY = dataframe[["Momentum"]].values
-    temp = dataframe.drop(columns=["Momentum"]).values
+    temp = dataframe.drop(columns=["Momentum", "Date"]).values
 
     dataX = []
     for index in range(len(temp) - time_steps):
         dataX.append(temp[index: index + time_steps])
+
+    dataX = numpy.array(dataX)
+    dataY = dataY[time_steps:]
 
     # normalize the data here in the future if need be
 
@@ -51,7 +54,7 @@ def build_model(layer_type="LSTM", layer_num=2, activation_type="sigmoid", loss_
     else:
         rnn_layer = RNN
 
-    model.add(rnn_layer(rnn_units, return_sequences=True, input_shape=(batch_size, time_steps, features)))
+    model.add(rnn_layer(rnn_units, return_sequences=True, input_shape=(time_steps, features)))
     if layer_num < 2:
         layer_num = 2
     for i in range(layer_num - 2):

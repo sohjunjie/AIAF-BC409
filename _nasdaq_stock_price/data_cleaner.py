@@ -72,7 +72,7 @@ def combine_cleaned_files_top9(companies, foldername):
         target_file = pd.read_csv(foldername + companies[i] + cleanedfile_postfix)
         headers = list(target_file)
 
-        j = 0
+        j = 1
         # -1 to remove the momentum from those classes
         while j < len(headers):
             dataframe[companies[i]+"_" + headers[j]] = target_file[headers[j]]

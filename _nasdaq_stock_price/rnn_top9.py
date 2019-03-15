@@ -10,7 +10,7 @@ from keras.layers import Dropout
 training_size = 1200
 features = 60
 num_class = 9
-time_steps = 1
+time_steps = 7
 epochs = 100
 batch_size = 1
 
@@ -27,8 +27,20 @@ symbols = ['FB', 'AAPL', 'AMZN', 'NFLX', 'GOOG', 'MSFT', 'IBM', 'ORCL', 'INTC']
 
 # process dataframe in to testing and training data
 def process_dataframe(dataframe):
+
+    print(numpy.shape(dataframe.values))
     dataY = dataframe[['FB_Momentum', 'AAPL_Momentum', 'AMZN_Momentum', 'NFLX_Momentum', 'GOOG_Momentum', 'MSFT_Momentum', 'IBM_Momentum', 'ORCL_Momentum', 'INTC_Momentum']].values
-    dataX = dataframe.drop(columns=['FB_Momentum', 'AAPL_Momentum', 'AMZN_Momentum', 'NFLX_Momentum', 'GOOG_Momentum', 'MSFT_Momentum', 'IBM_Momentum', 'ORCL_Momentum', 'INTC_Momentum']).values
+    temp = dataframe.drop(columns=['Date', 'FB_Momentum', 'AAPL_Momentum', 'AMZN_Momentum', 'NFLX_Momentum', 'GOOG_Momentum', 'MSFT_Momentum', 'IBM_Momentum', 'ORCL_Momentum', 'INTC_Momentum']).values
+
+    print(numpy.shape(dataY))
+    print(numpy.shape(temp))
+    dataX = []
+    for index in range(len(temp) - time_steps):
+        dataX.append(temp[index: index + time_steps])
+
+    dataX = numpy.array(dataX)
+    print(numpy.shape(dataX))
+    dataY = dataY[time_steps:]
 
     # normalize the data here in the future if need be
 
@@ -49,7 +61,7 @@ def build_model(layer_type="LSTM", layer_num=2, activation_type="sigmoid", loss_
     else:
         rnn_layer = RNN
 
-    model.add(rnn_layer(rnn_units, return_sequences=True, input_shape=(batch_size, features)))
+    model.add(rnn_layer(rnn_units, return_sequences=True, input_shape=(time_steps, features)))
     if layer_num < 2:
         layer_num = 2
     for i in range(layer_num - 2):
