@@ -23,7 +23,6 @@ optimizer = "rmsprop"
 dropout = 0
 
 
-
 # process dataframe in to testing and training data
 def process_dataframe(dataframe):
     dataY = dataframe[["Momentum"]].values

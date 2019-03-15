@@ -11,19 +11,19 @@ training_size = 1200
 features = 60
 num_class = 9
 time_steps = 1
-epochs = 20
+epochs = 100
 batch_size = 1
 
 time_steps = 1
-layer_type = "LSTM" # RNN, GRU or LSTM
+layer_type = "GRU" # RNN, GRU or LSTM
 rnn_units = 32
-rnn_layers = 9
+rnn_layers = 10
 loss = "binary_crossentropy"
 activation = "sigmoid"
 optimizer = "rmsprop"
 dropout = 0
 
-symbols = ['FB','AAPL','AMZN','NFLX','GOOG','MSFT','IBM','ORCL','INTC']
+symbols = ['FB', 'AAPL', 'AMZN', 'NFLX', 'GOOG', 'MSFT', 'IBM', 'ORCL', 'INTC']
 
 # process dataframe in to testing and training data
 def process_dataframe(dataframe):
