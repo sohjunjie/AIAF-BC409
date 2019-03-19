@@ -92,5 +92,3 @@ for company in symbols:
 
 combine_cleaned_files_nasdaq(symbols, data_foldername)
 combine_cleaned_files_top9(symbols, data_foldername)
-
-
