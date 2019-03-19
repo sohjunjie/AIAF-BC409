@@ -2,7 +2,7 @@ import numpy
 import pandas as pd
 from keras.models import Sequential
 from keras.layers import Dense
-from keras.layers import RNN
+from keras.layers import SimpleRNN
 from keras.layers import LSTM
 from keras.layers import GRU
 from keras.layers import Dropout
@@ -59,7 +59,7 @@ def build_model(layer_type="LSTM", layer_num=2, activation_type="sigmoid", loss_
     elif layer_type == "LSTM":
         rnn_layer = LSTM
     else:
-        rnn_layer = RNN
+        rnn_layer = SimpleRNN
 
     model.add(rnn_layer(rnn_units, return_sequences=True, input_shape=(time_steps, features)))
     if layer_num < 2:
