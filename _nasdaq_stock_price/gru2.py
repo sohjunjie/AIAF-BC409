@@ -229,8 +229,8 @@ class GRUModel:
         train_rec = recall_score(y_train, train_preds, pos_label=1)
 
         valid_acc = accuracy_score(y_valid, valid_preds)
-        valid_pre = precision_score(y_test, valid_preds, pos_label=1)
-        valid_rec = recall_score(y_test, valid_preds, pos_label=1)
+        valid_pre = precision_score(y_valid, valid_preds, pos_label=1)
+        valid_rec = recall_score(y_valid, valid_preds, pos_label=1)
 
         test_acc = accuracy_score(y_test, test_preds)
         test_pre = precision_score(y_test, test_preds, pos_label=1)
