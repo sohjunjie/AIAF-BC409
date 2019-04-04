@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 import pandas as pd
 from keras.models import Sequential
 from keras.layers import Dense
@@ -9,10 +9,11 @@ from keras.layers import Dropout
 from sklearn .linear_model import LogisticRegression
 from sklearn.feature_selection import RFE
 from sklearn import preprocessing
+import matplotlib.pyplot as plt
 
-training_size = 1400
+training_ratio = 0.8 # the rest will be split half half between validate and test data
 num_class = 9
-time_steps = 7
+time_steps = 10
 epochs = 50
 batch_size = 16
 
@@ -25,7 +26,7 @@ activation = "sigmoid"
 optimizer = "rmsprop"
 dropout = 0.1
 
-features = 500 # original 640
+features = 600 # original 640
 
 symbols = ['FB', 'AAPL', 'AMZN', 'NFLX', 'GOOG', 'MSFT', 'IBM', 'ORCL', 'INTC']
 
@@ -54,20 +55,13 @@ def process_dataframe(num_features):
     dataX = []
     for index in range(len(tempX) - time_steps):
         dataX.append(tempX[index: index + time_steps])
-
-    dataX = numpy.array(dataX)
-    print(numpy.shape(dataX))
     dataY = dataY[time_steps:]
 
-    # normalize the data here in the future if need be
+    validating_ratio = training_ratio + (1-training_ratio) * 0.5
+    trainX, validateX, testX = np.split(dataX, [int(training_ratio*len(dataX)), int(validating_ratio*len(dataX))])
+    trainY, validateY, testY = np.split(dataY, [int(training_ratio*len(dataY)), int(validating_ratio*len(dataY))])
 
-
-    trainX = dataX[:training_size]
-    testX = dataX[training_size:]
-    trainY = dataY[:training_size]
-    testY = dataY[training_size:]
-
-    return trainX, trainY, testX, testY
+    return trainX, trainY, validateX, validateY, testX, testY
 
 
 def build_model(features, layer_type="LSTM", layer_num=2, activation_type="sigmoid", loss_type="binary_crossentropy", optimizer_type="rmsprop", dropout_rate=0):
@@ -94,17 +88,44 @@ def build_model(features, layer_type="LSTM", layer_num=2, activation_type="sigmo
     return model
 
 
-trainX, trainY, testX, testY = process_dataframe(features)
+trainX, trainY, validateX, validateY, testX, testY = process_dataframe(features)
 
 # reshaping data for use
-trainX = numpy.reshape(trainX, (trainX.shape[0], time_steps, features))
-testX = numpy.reshape(testX, (testX.shape[0], time_steps, features))
+trainX = np.reshape(trainX, (trainX.shape[0], time_steps, features))
+validateX = np.reshape(validateX, (validateX.shape[0], time_steps, features))
+testX = np.reshape(testX, (testX.shape[0], time_steps, features))
 
 
 model = build_model(features , layer_type=layer_type, layer_num=rnn_layers, activation_type=activation, loss_type=loss, optimizer_type=optimizer, dropout_rate=dropout)
-model.fit(trainX, trainY, batch_size=batch_size, epochs=epochs, validation_data=(testX, testY))
+model.fit(trainX, trainY, batch_size=batch_size, epochs=epochs, validation_data=(validateX, validateY))
 
 score = model.evaluate(testX, testY, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
+
+
+test_pred = model.predict(testX)
+
+true_pos = 0
+false_pos = 0
+true_neg = 0
+false_neg = 0
+
+for i in range(len(testY[0])):
+    for j in range(len(testY)):
+        if testY[j][i] == round(test_pred[j][i]):
+            if testY[j][i] == 1:
+                true_pos += 1
+            else:
+                true_neg += 1
+        else:
+            if testY[j][i] == 1:
+                false_neg += 1
+            else:
+                false_pos += 1
+
+print("True positive: " + str(true_pos))
+print("True negative: " + str(true_neg))
+print("False positive: " + str(false_pos))
+print("False negative: " + str(false_neg))
 
