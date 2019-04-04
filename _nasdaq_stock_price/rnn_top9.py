@@ -6,9 +6,11 @@ from keras.layers import SimpleRNN
 from keras.layers import LSTM
 from keras.layers import GRU
 from keras.layers import Dropout
+from sklearn .linear_model import LogisticRegression
+from sklearn.feature_selection import RFE
+from sklearn import preprocessing
 
 training_size = 1400
-features = 640
 num_class = 9
 time_steps = 7
 epochs = 50
@@ -23,26 +25,42 @@ activation = "sigmoid"
 optimizer = "rmsprop"
 dropout = 0.1
 
+features = 500 # original 640
+
 symbols = ['FB', 'AAPL', 'AMZN', 'NFLX', 'GOOG', 'MSFT', 'IBM', 'ORCL', 'INTC']
 
 # process dataframe in to testing and training data
-def process_dataframe(dataframe):
+def process_dataframe(num_features):
+    df = pd.read_csv("./data/combined_top9.csv")
+    dataY = df[['FB_Trend_10', 'AAPL_Trend_10', 'AMZN_Trend_10', 'NFLX_Trend_10', 'GOOG_Trend_10', 'MSFT_Trend_10', 'IBM_Trend_10', 'ORCL_Trend_10', 'INTC_Trend_10']].values
+    tempX = df.drop(columns=['Date', 'FB_Trend_10', 'AAPL_Trend_10', 'AMZN_Trend_10', 'NFLX_Trend_10', 'GOOG_Trend_10', 'MSFT_Trend_10', 'IBM_Trend_10', 'ORCL_Trend_10', 'INTC_Trend_10']).values
 
-    print(numpy.shape(dataframe.values))
-    dataY = dataframe[['FB_Trend_10', 'AAPL_Trend_10', 'AMZN_Trend_10', 'NFLX_Trend_10', 'GOOG_Trend_10', 'MSFT_Trend_10', 'IBM_Trend_10', 'ORCL_Trend_10', 'INTC_Trend_10']].values
-    temp = dataframe.drop(columns=['Date', 'FB_Trend_10', 'AAPL_Trend_10', 'AMZN_Trend_10', 'NFLX_Trend_10', 'GOOG_Trend_10', 'MSFT_Trend_10', 'IBM_Trend_10', 'ORCL_Trend_10', 'INTC_Trend_10']).values
 
-    print(numpy.shape(dataY))
-    print(numpy.shape(temp))
+    # nomalizing data
+    min_max_scaler = preprocessing.MinMaxScaler()
+    tempX = min_max_scaler.fit_transform(tempX)
+
+    df2 = pd.read_csv("./data/combined_nasdaq.csv")
+    tempY = df2[["Trend_10"]].values
+
+    # feature selection
+    #  Create a logistic regression estimator
+    logreg = LogisticRegression()
+
+    # Use RFECV to pick best features, using Stratified Kfold
+    rfe = RFE(logreg, num_features)
+    tempX = rfe.fit_transform(tempX, tempY)
+
     dataX = []
-    for index in range(len(temp) - time_steps):
-        dataX.append(temp[index: index + time_steps])
+    for index in range(len(tempX) - time_steps):
+        dataX.append(tempX[index: index + time_steps])
 
     dataX = numpy.array(dataX)
     print(numpy.shape(dataX))
     dataY = dataY[time_steps:]
 
     # normalize the data here in the future if need be
+
 
     trainX = dataX[:training_size]
     testX = dataX[training_size:]
@@ -52,7 +70,7 @@ def process_dataframe(dataframe):
     return trainX, trainY, testX, testY
 
 
-def build_model(layer_type="LSTM", layer_num=2, activation_type="sigmoid", loss_type="binary_crossentropy", optimizer_type="rmsprop", dropout_rate=0):
+def build_model(features, layer_type="LSTM", layer_num=2, activation_type="sigmoid", loss_type="binary_crossentropy", optimizer_type="rmsprop", dropout_rate=0):
     model = Sequential()
     if layer_type == "GRU":
         rnn_layer = GRU
@@ -76,15 +94,14 @@ def build_model(layer_type="LSTM", layer_num=2, activation_type="sigmoid", loss_
     return model
 
 
-datafile = pd.read_csv("./data/combined_top9.csv")
-trainX, trainY, testX, testY = process_dataframe(datafile)
+trainX, trainY, testX, testY = process_dataframe(features)
 
 # reshaping data for use
 trainX = numpy.reshape(trainX, (trainX.shape[0], time_steps, features))
 testX = numpy.reshape(testX, (testX.shape[0], time_steps, features))
 
 
-model = build_model(layer_type=layer_type, layer_num=rnn_layers, activation_type=activation, loss_type=loss, optimizer_type=optimizer, dropout_rate=dropout)
+model = build_model(features , layer_type=layer_type, layer_num=rnn_layers, activation_type=activation, loss_type=loss, optimizer_type=optimizer, dropout_rate=dropout)
 model.fit(trainX, trainY, batch_size=batch_size, epochs=epochs, validation_data=(testX, testY))
 
 score = model.evaluate(testX, testY, verbose=0)

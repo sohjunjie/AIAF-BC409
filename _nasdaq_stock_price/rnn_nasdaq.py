@@ -7,9 +7,12 @@ from keras.layers import LSTM
 from keras.layers import GRU
 from keras.layers import Dropout
 from keras.utils import plot_model
+from sklearn .linear_model import LogisticRegression
+from sklearn.feature_selection import RFE
+from sklearn import preprocessing
 
 training_size = 1200
-features = 640
+features = 640 # 640 original
 num_class = 1
 epochs = 100
 batch_size = 16
@@ -25,9 +28,21 @@ dropout = 0
 
 
 # process dataframe in to testing and training data
-def process_dataframe(dataframe):
+def process_dataframe(dataframe, num_features):
     dataY = dataframe[["Trend_10"]].values
-    temp = dataframe.drop(columns=["Trend_10", "Date"]).values
+    temp = dataframe.drop(columns=["Trend_10", "Date"])
+
+    # nomalizing data
+    min_max_scaler = preprocessing.MinMaxScaler()
+    temp = min_max_scaler.fit_transform(temp)
+
+    # feature selection
+    #  Create a logistic regression estimator
+    logreg = LogisticRegression()
+
+    # Use RFECV to pick best features, using Stratified Kfold
+    rfe = RFE(logreg, num_features)
+    temp = rfe.fit_transform(temp, dataY)
 
     dataX = []
     for index in range(len(temp) - time_steps):
@@ -35,8 +50,6 @@ def process_dataframe(dataframe):
 
     dataX = numpy.array(dataX)
     dataY = dataY[time_steps:]
-
-    # normalize the data here in the future if need be
 
     trainX = dataX[:training_size]
     testX = dataX[training_size:]
@@ -71,7 +84,7 @@ def build_model(layer_type="LSTM", layer_num=2, activation_type="sigmoid", loss_
 
 
 datafile = pd.read_csv("./data/combined_nasdaq.csv")
-trainX, trainY, testX, testY = process_dataframe(datafile)
+trainX, trainY, testX, testY = process_dataframe(datafile, features)
 
 # reshaping data for use
 trainX = numpy.reshape(trainX, (trainX.shape[0], time_steps, features))
