@@ -9,13 +9,13 @@ from keras.layers import Dropout
 from keras.utils import plot_model
 
 training_size = 1200
-features = 60
+features = 640
 num_class = 1
-epochs = 20
-batch_size = 1
+epochs = 100
+batch_size = 16
 
-time_steps = 2
-layer_type = "RNN" #RNN, GRU or LSTM
+time_steps = 5
+layer_type = "GRU" #RNN, GRU or LSTM
 rnn_units = 32
 rnn_layers = 2
 loss = "binary_crossentropy"
@@ -26,8 +26,8 @@ dropout = 0
 
 # process dataframe in to testing and training data
 def process_dataframe(dataframe):
-    dataY = dataframe[["Momentum"]].values
-    temp = dataframe.drop(columns=["Momentum", "Date"]).values
+    dataY = dataframe[["Trend_10"]].values
+    temp = dataframe.drop(columns=["Trend_10", "Date"]).values
 
     dataX = []
     for index in range(len(temp) - time_steps):

@@ -7,21 +7,21 @@ from keras.layers import LSTM
 from keras.layers import GRU
 from keras.layers import Dropout
 
-training_size = 1200
-features = 60
+training_size = 1400
+features = 640
 num_class = 9
 time_steps = 7
-epochs = 100
-batch_size = 1
+epochs = 50
+batch_size = 16
 
-time_steps = 1
-layer_type = "GRU" # RNN, GRU or LSTM
+time_steps = 10
+layer_type = "LSTM" # RNN, GRU or LSTM
 rnn_units = 32
-rnn_layers = 10
+rnn_layers = 3
 loss = "binary_crossentropy"
 activation = "sigmoid"
 optimizer = "rmsprop"
-dropout = 0
+dropout = 0.1
 
 symbols = ['FB', 'AAPL', 'AMZN', 'NFLX', 'GOOG', 'MSFT', 'IBM', 'ORCL', 'INTC']
 
@@ -29,8 +29,8 @@ symbols = ['FB', 'AAPL', 'AMZN', 'NFLX', 'GOOG', 'MSFT', 'IBM', 'ORCL', 'INTC']
 def process_dataframe(dataframe):
 
     print(numpy.shape(dataframe.values))
-    dataY = dataframe[['FB_Momentum', 'AAPL_Momentum', 'AMZN_Momentum', 'NFLX_Momentum', 'GOOG_Momentum', 'MSFT_Momentum', 'IBM_Momentum', 'ORCL_Momentum', 'INTC_Momentum']].values
-    temp = dataframe.drop(columns=['Date', 'FB_Momentum', 'AAPL_Momentum', 'AMZN_Momentum', 'NFLX_Momentum', 'GOOG_Momentum', 'MSFT_Momentum', 'IBM_Momentum', 'ORCL_Momentum', 'INTC_Momentum']).values
+    dataY = dataframe[['FB_Trend_10', 'AAPL_Trend_10', 'AMZN_Trend_10', 'NFLX_Trend_10', 'GOOG_Trend_10', 'MSFT_Trend_10', 'IBM_Trend_10', 'ORCL_Trend_10', 'INTC_Trend_10']].values
+    temp = dataframe.drop(columns=['Date', 'FB_Trend_10', 'AAPL_Trend_10', 'AMZN_Trend_10', 'NFLX_Trend_10', 'GOOG_Trend_10', 'MSFT_Trend_10', 'IBM_Trend_10', 'ORCL_Trend_10', 'INTC_Trend_10']).values
 
     print(numpy.shape(dataY))
     print(numpy.shape(temp))
