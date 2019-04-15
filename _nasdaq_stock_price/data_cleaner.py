@@ -1,4 +1,5 @@
 import pandas as pd
+from ta import *
 
 data_foldername = "./data/"
 
@@ -7,22 +8,23 @@ symbols = ['NDAQ','FB','AAPL','AMZN','NFLX','GOOG','MSFT','IBM','ORCL','INTC']
 originalfile_postfix = ".csv"
 cleanedfile_postfix = "_cleaned.csv"
 
+# how many days ahead to predict
+trend_days = 10
 
-def generate_change_momentum(symbol, foldername):
+
+
+def generate_ta(symbol, foldername):
     target_file = pd.read_csv(foldername + symbol + originalfile_postfix)
     date = target_file['Date']
     close = target_file['Close']
     change = [0] * len(date)
-    momentum = [0] * len(date)
+    trend = [0] * len(date)
 
-    for i in range(1, len(date)):
-        change[i] = (close[i] - close[i - 1]) / close[i - 1]
-
-    for j in range(0, len(date)-1):
-        if close[j] > close[j + 1]:
-            momentum[j] = "0"
+    for j in range(0, len(date) - trend_days):
+        if close[j] > close[j + trend_days]:
+            trend[j] = "0"
         else:
-            momentum[j] = "1"
+            trend[j] = "1"
 
 
 
@@ -33,10 +35,15 @@ def generate_change_momentum(symbol, foldername):
         'Open': target_file['Open'],
         'Close': target_file['Close'],
         'Volume': target_file['Volume'],
-        'Change': change,
-        'Momentum': momentum
+        'Trend_10': trend
     })
 
+    dataframe = add_all_ta_features(dataframe, "Open", "High", "Low", "Close", "Volume", fillna=True)
+
+    # remove top 35 and last row as cleanup
+    # top 35 for some of the variables generated in TA
+    # last row for the target
+    dataframe = dataframe[35:-trend_days]
     dataframe.to_csv(foldername + symbol + cleanedfile_postfix, index=False, header=True)
 
 
@@ -50,7 +57,7 @@ def combine_cleaned_files_nasdaq(companies, foldername):
         headers = list(target_file)
 
         j = 1
-        # -1 to remove the momentum from those classes
+        # -1 to remove the Y from those classes
         while j < len(headers) - 1:
             dataframe[companies[i]+"_" + headers[j]] = target_file[headers[j]]
             j += 1
@@ -82,13 +89,13 @@ def combine_cleaned_files_top9(companies, foldername):
 
     dataframe.drop(dataframe.index[0], inplace=True)
     dataframe.drop(dataframe.index[-1:], inplace=True)
-    dataframe.drop(columns=["Momentum"], inplace=True)
+    dataframe.drop(columns=["Trend_10"], inplace=True)
 
     dataframe.to_csv(foldername + "combined_top9.csv", index=False, header=True)
 
 
 for company in symbols:
-    generate_change_momentum(company, data_foldername)
+    generate_ta(company, data_foldername)
 
 combine_cleaned_files_nasdaq(symbols, data_foldername)
 combine_cleaned_files_top9(symbols, data_foldername)
