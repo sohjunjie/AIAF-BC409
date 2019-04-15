@@ -22,16 +22,14 @@ $ pip install -r requirements.txt
 ```
 
 ## Implemented AI models
-1. 
+#### 1. 
 
-2.
+#### 2.
 
-3. GRU + News
-
-    This model uses takes into account time series news data and market prices to predict NASDAQ price trends.
-
-    Starting from the project root directory, test and execute the model using the following commands.
-    ```
-    $ cd _nasdaq_stock_price
-    $ python gru.py
-    ```
+#### 3. GRU + News
+This model uses time series news data and market prices to predict NASDAQ price trends.
+Starting from the project root directory, you can test and execute the model using the following commands.
+```
+$ cd _nasdaq_stock_price
+$ python gru.py
+```
