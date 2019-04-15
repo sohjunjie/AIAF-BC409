@@ -5,7 +5,7 @@ from keras.layers import Dense, GRU, Input, concatenate
 from keras.layers.core import Reshape
 from keras.layers.embeddings import Embedding
 from keras.layers.normalization import BatchNormalization
-from keras.models import Sequential, Model
+from keras.models import Model
 from keras.optimizers import RMSprop
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
@@ -19,6 +19,45 @@ from sklearn.metrics import recall_score
 from sklearn.metrics import roc_curve
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MinMaxScaler
+
+
+def draw_price_trend_plot(dataset, train_preds, valid_preds, test_preds, y_train, y_valid, y_test):
+
+    close = dataset[['Close']]
+    close = close.values.reshape(-1)
+    x_axis = np.arange(0, len(close))
+
+    train_preds = train_preds.reshape(-1)
+    valid_preds = valid_preds.reshape(-1)
+    test_preds = test_preds.reshape(-1)
+    trend = np.concatenate([train_preds, valid_preds, test_preds])
+
+    y_train = y_train.reshape(-1)
+    y_valid = y_valid.reshape(-1)
+    y_test = y_test.reshape(-1)
+    y_trend = np.concatenate([y_train, y_valid, y_test])
+
+    padded_trend = np.pad(trend, [len(close) - len(trend), 0], mode='constant', constant_values=-1)
+    padded_y_trend = np.pad(y_trend, [len(close) - len(trend), 0], mode='constant', constant_values=-1)
+
+    test_idx = len(y_train) + len(y_valid)
+
+    plt.subplot(3, 1, 1)
+    plt.plot(x_axis[test_idx:], close[test_idx:], '-')
+    plt.title('prediction of nasdaq trend momentum on test set')
+    plt.ylabel('standardized closing price')
+
+    plt.subplot(3, 1, 2)
+    plt.plot(x_axis[test_idx:], padded_y_trend[test_idx:], 'o')
+    plt.xlabel('time (s)')
+    plt.ylabel('true momentum')
+
+    plt.subplot(3, 1, 3)
+    plt.plot(x_axis[test_idx:], padded_trend[test_idx:], 'o')
+    plt.xlabel('time')
+    plt.ylabel('predicted momentum')
+
+    plt.show()
 
 
 def draw_precision_recall_curve(actuals, predict_probs, titlestr):
@@ -311,13 +350,15 @@ class GRUModel:
         print('test recall: ', test_rec)
         print('test f1 score: ', test_f1)
 
-        draw_roc_curve(y_train, train_probs, 'training')
-        draw_roc_curve(y_valid, valid_probs, 'validation')
-        draw_roc_curve(y_test, test_probs, 'testing')
+        # draw_roc_curve(y_train, train_probs, 'training')
+        # draw_roc_curve(y_valid, valid_probs, 'validation')
+        # draw_roc_curve(y_test, test_probs, 'testing')
+        #
+        # draw_precision_recall_curve(y_train, train_probs, 'training')
+        # draw_precision_recall_curve(y_valid, valid_probs, 'validation')
+        # draw_precision_recall_curve(y_test, test_probs, 'testing')
 
-        draw_precision_recall_curve(y_train, train_probs, 'training')
-        draw_precision_recall_curve(y_valid, valid_probs, 'validation')
-        draw_precision_recall_curve(y_test, test_probs, 'testing')
+        draw_price_trend_plot(self.dataset, train_preds, valid_preds, test_preds, y_train, y_valid, y_test)
 
 
 if __name__ == '__main__':
@@ -342,4 +383,5 @@ if __name__ == '__main__':
                         epochs=EPOCHS,
                         num_train=NUM_TRAIN,
                         num_valid=NUM_VALID)
+    # m = gruModel.create_model()
     gruModel.train_model()
