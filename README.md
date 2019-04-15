@@ -28,12 +28,10 @@ $ pip install -r requirements.txt
 
 3. GRU + News
 
-This model uses takes into account time series news data and market prices to predict NASDAQ price trends
+    This model uses takes into account time series news data and market prices to predict NASDAQ price trends.
 
-![alt text](_nasdaq_stock_price/image/grunews_architecture.png)
-
-Starting from the project root directory, test and execute the model using the following commands.
-```
-$ cd _nasdaq_stock_price
-$ python gru.py
-```
+    Starting from the project root directory, test and execute the model using the following commands.
+    ```
+    $ cd _nasdaq_stock_price
+    $ python gru.py
+    ```
