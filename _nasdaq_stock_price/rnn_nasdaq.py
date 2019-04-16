@@ -93,7 +93,7 @@ testX = numpy.reshape(testX, (testX.shape[0], time_steps, features))
 model = build_model(layer_type=layer_type, layer_num=rnn_layers, activation_type=activation, loss_type=loss, optimizer_type=optimizer, dropout_rate=dropout)
 model.fit(trainX, trainY, batch_size=batch_size, epochs=epochs, validation_data=(testX, testY))
 
-plot_model(model, to_file='model_seq.png', show_shapes=True)
+# plot_model(model, to_file='model_seq.png', show_shapes=True)
 
 score = model.evaluate(testX, testY, verbose=0)
 print('Test loss:', score[0])

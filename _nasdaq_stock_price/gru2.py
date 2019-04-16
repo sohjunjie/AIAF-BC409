@@ -1,5 +1,5 @@
 """
-GRU + NEWS model predicting the 10 day forward momentum
+GRU + NEWS model predicting the 10 day backward momentum
 """
 
 import matplotlib.pyplot as plt
@@ -193,7 +193,7 @@ class GRUModel:
         timestep = self.timeStep
         dataset_x = self.dataset.drop(columns=['Top' + str(i) for i in range(1, 26)])
         dataset_x_ts = self.dataset[['Top' + str(i) for i in range(1, 26)]]
-        dataset_y = self.dataset[['Forward_momentum_10', ]]
+        dataset_y = self.dataset[['Backward_momentum_10', ]]
 
         sequence_len = timestep + 1
         result_x = []
@@ -365,8 +365,8 @@ class GRUModel:
 
 if __name__ == '__main__':
     corpus = pd.read_csv('data/RedditNewsCorpus.csv', header=None)
-    dataset = pd.read_csv('data/combined_nasdaq_news_v2.csv', index_col='Date')
-    dataset = dataset[['Close', 'Volume', 'Change', 'Forward_momentum_10'] +
+    dataset = pd.read_csv('data/combined_nasdaq_news_v4.csv', index_col='Date')
+    dataset = dataset[['Close', 'Volume', 'Change', 'Backward_momentum_10'] +
                       ['Top' + str(i) for i in range(1, 26)]]
 
     MAX_TEXT_SEQLEN = 25
