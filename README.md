@@ -22,7 +22,15 @@ $ pip install -r requirements.txt
 ```
 
 ## Implemented AI models
-#### 1. 
+#### 1. Decision Tree, Random Forest, KNN, SVM
+Basic models for predicting stock movement and price are implemented in `R` in the
+[folder](_nasdaq_stock_price/basic_model_R).
+```
+1. decision tree.R         # decision tree model
+2. knn.R                   # K-Nearest Neighbour model
+3. LR.R                    # Linear Regression model
+4. svm.R                   # Support Vector Model
+```
 
 #### 2. RNN, GRU, LSTM
 This model uses the stock price information from NASDAQ and 9 other top NASDAQ companies to predict the 9 companies stock price trends.
