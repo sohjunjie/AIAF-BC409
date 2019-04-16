@@ -16,7 +16,8 @@ of [AI models](#implemented-ai-models).
 5. Soh Jun Jie ([sohjunjie](https://github.com/sohjunjie))
 
 ## Package requirements
-Please install the required python packages with the following commands.
+Ensure that you are in the root directory of the project.
+Afterwards, install the required python packages using the following commands.
 ```
 $ pip install -r requirements.txt
 ```
